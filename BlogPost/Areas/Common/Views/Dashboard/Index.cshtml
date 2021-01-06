@@ -1,0 +1,87 @@
+﻿@model IEnumerable<BlogPost.Models.ViewModels.DashBoardViewModel>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row pb-3 backgroundWhite">
+
+    @foreach (var item in Model)
+    {
+        <div class="col-lg-4 col-md-6 mrt">
+            <div >
+                <div>
+                    <div class="row row_b">
+                        <div class="col-6 col_b">
+                            <div>
+                                <div class="ko">
+                                    @if (!string.IsNullOrEmpty(item.UserImage))
+                                    {
+                                        <img class="pimage" src="/images/@item.UserImage" />
+                                    }
+                                    else
+                                    {
+                                        <img class="pimage" src="/images/userprofile.png" />
+                                    }
+                                    @item.CreatedBy
+                                </div>
+                            </div>
+                            <div>
+                                <a href="/Common/Dashboard/PublicFullStory/@item.StoryId">
+                                    <div class="gg">@item.Title</div>
+                                </a>
+                            </div>
+                            <div>
+                                <div class="gh">@item.StoryFirstPara</div>
+                            </div>
+                            <div>
+                                <div class="gk">@item.CreatedOn</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col_b">
+                            <div style="max-width: 80%;">@Html.Raw(item.StoryFirstImage)</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>}
+
+</div>
+<style>
+
+    .row_b {
+        display: flex; /* equal height of the children */
+    }
+
+    .col_b {
+        flex: 1; /* additionally, equal width */
+        padding: inherit ;
+        border: none;
+    }
+    .ko {
+        font-size: 13px;
+    }
+    .gg {
+        color: #2c3e50;
+        font-size: 16px;
+        font-weight:bold;
+    }
+    .gh {
+        color: green;
+        font-size: 14px;
+    }
+    .gk {
+        color: #757575;
+        font-size: 13px;
+        font-family: sohne, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    .pimage {
+        width:20px;
+        height:20px;
+    }
+    .mrt {
+        margin-top:40px;
+    }
+    
+</style>

@@ -1,0 +1,96 @@
+﻿
+@{
+    ViewData["Title"] = "PublicFullStory";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@*<h1>PublicFullStory</h1>*@
+
+<div class="row">
+     <div class="col-8 pt-4">
+        <div class="row">
+            <div class="col-2">
+            </div>
+            <p id="Title" class="col-10" style="font-size:26px;font-weight: bold;">
+            </p>
+        </div>
+        <div class="row">
+            <div class="col-2">
+            </div>
+            <p id="SubTitle" class="col-10" style="color: #1a8917;">
+            </p>
+        </div>
+        <div class="row">
+            <div class="col-2">
+            </div>
+            <p id="HtmlStory" class="col-10">
+            </p>
+        </div>
+        <input type="hidden" id="StoryId" />
+        <input type="hidden" id="FileName" />
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var StoryId = GetURLParameter();
+        if (StoryId > 0)
+            getStory(StoryId);
+    });
+
+    function GetURLParameter() {
+        var sPageURL = window.location.href;
+        var indexOfLastSlash = sPageURL.lastIndexOf("/");
+
+        if (indexOfLastSlash > 0 && sPageURL.length - 1 != indexOfLastSlash)
+            return sPageURL.substring(indexOfLastSlash + 1);
+        else
+            return 0;
+    }
+    function getStory(StoryId) {
+        $.ajax(
+            {
+                type: "GET",
+                url: "/Users/Story/LoadUserStory?StoryId=" + StoryId, // Controller/View
+                success: function (response) {
+                    if (response.success) {
+                        var result = response.data;
+                        document.getElementById("Title").innerHTML = result.title;
+                        document.getElementById("SubTitle").innerHTML = result.subTitle;
+                        document.getElementById("HtmlStory").innerHTML = result.htmlStory;
+                        document.getElementById("StoryId").value = StoryId;
+
+                    } else {
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("error!");  //
+                }
+
+            });
+    }
+
+    function AddStoryClap() {
+        $.ajax(
+            {
+                type: "POST", //HTTP POST Method
+                url: "/Common/Dashboard/AjaxAddStoryClap", // Controller/View
+                data: { StoryId: $("#StoryId").val() },
+                success: function (response) {
+                    if (response.success) {
+                        var result = response.data;
+                        $("#btnClap").html(response.clapCount);
+                        //toastr.success(response.responseText);
+                    } else {
+                        //toastr.success(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("error!");  //
+                }
+
+            });
+
+    }
+
+</script>

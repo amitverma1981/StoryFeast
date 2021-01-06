@@ -1,0 +1,153 @@
+﻿
+@{
+    ViewData["Title"] = "UserStories";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* Style the tab */
+   /* .tab {
+        overflow: hidden;
+        border: 1px solid #ccc;
+        background-color: #f1f1f1;
+    }*/
+    .tab {
+        overflow: hidden;
+        border-bottom: 1px solid #ccc;
+    }
+        /* Style the buttons that are used to open the tab content */
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+        }
+
+            /* Change background color of buttons on hover */
+            .tab button:hover {
+                background-color: #ddd;
+            }
+
+            /* Create an active/current tablink class */
+            .tab button.active {
+                background-color: #ccc;
+            }
+
+    /* Style the tab content */
+   /* .tabcontent {
+        display: none;
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        border-top: none;
+    }*/
+
+    .tabcontent {
+        display: none;
+        padding: 6px 12px;
+        border-top: none;
+    }
+</style>
+<h1>Your Stories</h1>
+
+<div class="tab tg">
+    <button id="defaultOpen" class="tablinks" onclick="getStories(event, 'Draft')"><div>Draft <h id="dCount"></h></div></button>
+    <button class="tablinks" onclick="getStories(event, 'Published')"><div>Published <h id="pCount"></h></div></button>
+</div>
+<div id="StoryContainer" class="tabcontent">
+</div>
+<script type="text/javascript">
+    document.getElementById("defaultOpen").click();
+
+    function getStories(evt, StoryType) {
+        // Declare all variables
+        var i, tabcontent, tablinks;
+
+        // Get all elements with class="tabcontent" and hide them
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+
+        // Get all elements with class="tablinks" and remove the class "active"
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+
+        // Show the current tab, and add an "active" class to the button that opened the tab
+        //document.getElementById("StoryContainer").innerHTML = "<h3>" + StoryType + "</h3><p>" + StoryType+" is the capital city of England.</p>"
+        //document.getElementById("StoryContainer").style.display = "block";
+        GetStoryList(StoryType);
+        evt.currentTarget.className += " active";
+    }
+
+    function GetStoryList(StoryType) {
+        $.ajax(
+            {
+                type: "GET", //HTTP POST Method
+                url: "/Users/Story/AjaxStoryDetail?StoryType=" + StoryType, // Controller/View
+                success: function (response) {
+                    if (response.success) {
+                        //alert(JSON.stringify(response));
+                        var result = response.data;
+                        var draftcount = response.draftCount;
+                        var publishedcount = response.publishedCount;
+                        document.getElementById("dCount").innerHTML = "(" + draftcount +")";
+                        document.getElementById("pCount").innerHTML = "(" + publishedcount + ")";
+                        //alert(JSON.stringify(result));
+                        var Htmlbody = '';
+                        Htmlbody += "<div>";
+                        $.each(result, function (i, item) {
+                            Htmlbody += "<div class='mrt' id=story_" + item.storyId + ">";
+                            Htmlbody += "<h3><a href='/Users/Story/Index/" + item.storyId + "'><div class='tg'>" + item.title + "</div></a></h3></div>";
+                            Htmlbody += "<div><a href='/Users/Story/Index/" + item.storyId + "'><div class='stg'>" + item.storyFirstPara + "</div></a></div>";
+                            Htmlbody += "<div><div class='stg'>Last edited on " + item.updatedOn + "</div></div>";
+                            Htmlbody += "<div class='lc mrt'></div>";
+                        });
+                        Htmlbody += "</div>";
+
+                        document.getElementById("StoryContainer").innerHTML = Htmlbody;
+                        document.getElementById("StoryContainer").style.display = "block";
+
+                        //alert(response.responseText);
+                    } else {
+                        // DoSomethingElse()
+                        alert(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("error!");  //
+                }
+
+            });
+    }
+</script>
+<style>
+
+    .lc {
+        border-bottom: 1px solid rgb(230, 230, 230)
+    }
+    .mrt {
+        margin-top:20px;
+    }
+    .tg {
+        font-size: 16px;
+        font-weight: 700;
+        font-family: sohne, "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: rgb(41, 41, 41);
+    }
+    .stg {
+        font-size: 15px;
+        font-weight: 400;
+        font-family: sohne, "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: rgb(117, 117, 117);
+    }
+    .tg {
+        color: rgb(41, 41, 41);
+        font-size: 14px;
+        font-family: sohne, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+</style>

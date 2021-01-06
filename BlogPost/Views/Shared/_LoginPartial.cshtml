@@ -1,0 +1,57 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+@*<ul class="navbar-nav">*@
+<ul class="navbar-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+    @*<li class="nav-item">
+    <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello  @User.GetFullName()</a>
+    </li>
+    <li class="nav-item">
+       <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+       <button  type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+       </form>
+    </li>*@
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            @*<img src="~/images/userprofile.png" />*@
+            <img class ="pimage" src='~/images/@User.GetProfileImage()' />
+        </a>
+       <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+           <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">@User.GetFullName()</a>
+           <div class="dropdown-divider"></div>
+           <a class="dropdown-item" asp-area="Users" asp-controller="Story" asp-action="Index" asp-route-id="0">Write a story</a>
+           <div class="dropdown-divider"></div>
+           <a class="dropdown-item" asp-area="Users" asp-controller="Story" asp-action="UserStories">Stories</a>
+           <div class="dropdown-divider"></div>
+           <div>
+               <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Login", "Account", new { area = "Identity" })">
+                   <button class="dropdown-item" type="submit">Logout</button>
+               </form>
+           </div>
+       </div>
+       </li>
+       @*<li class="nav-item">
+        <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+        <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+        </form>
+       </li>*@ 
+       }
+       else
+       {
+       <li class="nav-item">
+         <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Register</a>
+       </li>
+       <li class="nav-item">
+        <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Login</a>
+       </li>
+}
+</ul>
+<style>
+    .pimage {
+        border-radius: 50%;
+        width: 40px !important;
+        height: 40px !important;
+    }
+</style>

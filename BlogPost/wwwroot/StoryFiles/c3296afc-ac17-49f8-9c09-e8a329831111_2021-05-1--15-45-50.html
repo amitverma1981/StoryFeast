@@ -1,0 +1,26 @@
+<p>
+
+</p>
+
+
+
+
+<p class="isi"><em>In this article I’m going to walk you through
+the pieces Blazor uses to make form validation happen. It covers some internal
+mechanisms and may be interesting if you want to find out how stuff are working
+under the hood. It based on my own observations so if you find any misunderstandings
+or mistakes please leave your suggestions and notes in comments. Article is
+based on using </em><a href="https://github.com/ryanelian/FluentValidation.Blazor"><em><span style="color:blue">FluentValidator.Blazor</span></em></a><em> custom validator
+component which I find quite useful and flexible when it comes to form
+validation.</em></p>
+
+
+
+
+
+
+
+<br />
+
+
+<div class="dp-highlighter"><ol class="dp-c" start="1"><li class="alt"><span><span class="keyword">internal</span><span>&nbsp;</span><span class="keyword">class</span><span>&nbsp;FieldState&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">private</span><span>&nbsp;</span><span class="keyword">readonly</span><span>&nbsp;FieldIdentifier&nbsp;_fieldIdentifier;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">private</span><span>&nbsp;HashSet&lt;ValidationMessageStore&gt;&nbsp;_validationMessageStores;&nbsp;&nbsp;</span></span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span><span class="keyword">public</span><span>&nbsp;FieldState(FieldIdentifier&nbsp;fieldIdentifier)&nbsp;&nbsp;</span></span></li><li class=""><span>{&nbsp;&nbsp;</span></li><li class="alt"><span>_fieldIdentifier&nbsp;=&nbsp;fieldIdentifier;&nbsp;&nbsp;</span></li><li class=""><span>}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">public</span><span>&nbsp;</span><span class="keyword">bool</span><span>&nbsp;IsModified&nbsp;{&nbsp;</span><span class="keyword">get</span><span>;&nbsp;</span><span class="keyword">set</span><span>;&nbsp;}&nbsp;&nbsp;</span></span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">public</span><span>&nbsp;IEnumerable&lt;</span><span class="keyword">string</span><span>&gt;&nbsp;GetValidationMessages()&nbsp;&nbsp;</span></span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">if</span><span>&nbsp;(_validationMessageStores&nbsp;!=&nbsp;</span><span class="keyword">null</span><span>)&nbsp;&nbsp;</span></span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">foreach</span><span>&nbsp;(var&nbsp;store&nbsp;</span><span class="keyword">in</span><span>&nbsp;_validationMessageStores)&nbsp;&nbsp;</span></span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">foreach</span><span>&nbsp;(var&nbsp;message&nbsp;</span><span class="keyword">in</span><span>&nbsp;store[_fieldIdentifier])&nbsp;&nbsp;</span></span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>yield&nbsp;<span class="keyword">return</span><span>&nbsp;message;&nbsp;&nbsp;</span></span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>}&nbsp;&nbsp;</span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">public</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;AssociateWithValidationMessageStore(ValidationMessageStore&nbsp;validationMessageStore)&nbsp;&nbsp;</span></span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">if</span><span>&nbsp;(_validationMessageStores&nbsp;==&nbsp;</span><span class="keyword">null</span><span>)&nbsp;&nbsp;</span></span></li><li class="alt"><span>{&nbsp;&nbsp;</span></li><li class=""><span>_validationMessageStores&nbsp;=&nbsp;<span class="keyword">new</span><span>&nbsp;HashSet&lt;ValidationMessageStore&gt;();&nbsp;&nbsp;</span></span></li><li class="alt"><span>}&nbsp;&nbsp;</span></li><li class=""><span>&nbsp;&nbsp;</span></li><li class="alt"><span>_validationMessageStores.Add(validationMessageStore);&nbsp;&nbsp;</span></li><li class=""><span>}&nbsp;&nbsp;</span></li><li class="alt"><span>&nbsp;&nbsp;</span></li><li class=""><span><span class="keyword">public</span><span>&nbsp;</span><span class="keyword">void</span><span>&nbsp;DissociateFromValidationMessageStore(ValidationMessageStore&nbsp;validationMessageStore)&nbsp;&nbsp;</span></span></li><li class="alt"><span>=&gt;&nbsp;_validationMessageStores?.Remove(validationMessageStore);&nbsp;&nbsp;</span></li><li class=""><span>}&nbsp;&nbsp;</span></li></ol></div>

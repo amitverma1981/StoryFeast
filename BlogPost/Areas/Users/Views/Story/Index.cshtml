@@ -1,0 +1,168 @@
+﻿@model BlogPost.Models.Story
+@{
+    ViewData["Title"] = "AjaxMode";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="/richtexteditor/rte_theme_default.css" />
+<script type="text/javascript" src="/richtexteditor/rte.js"></script>
+<script type="text/javascript" src='/richtexteditor/plugins/all_plugins.js'></script>
+<script type="text/javascript" src="/rte-upload.js"></script>
+
+<div class="text-left" style="width:auto">
+    <div>
+    </div>
+    <div>
+        <button class="btn btn-success btn-sm rightButton" onclick="PublishStory(); return false;">Publish</button>
+    </div>
+    <div class="col-12 pt-5">
+        <div class="form-group row">
+            <div class="col-12">
+                <input id="Title" asp-for="Title" class="form-control" placeholder="Title" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+        </div>
+        <div id="div_editor1" class="richtexteditor" style="width:auto;margin:0 auto;">
+        </div>
+        <div>
+            <input type="hidden" id="StoryId" />
+            <input type="hidden" id="FileName" />
+        </div>
+    </div>
+    <div style="margin:0 auto;padding:24px;">
+        <button class="btn btn-success btn-sm float-right" onclick="SaveStory(); return false;">Save Story</button>
+    </div>
+</div>
+<script>
+    var div_savedhtml = document.getElementById("div_savedhtml");
+    var editor1 = new RichTextEditor(document.getElementById("div_editor1"));
+
+
+    function DoAjaxSave() {
+        var code = editor1.getHTMLCode();
+        var xh = new XMLHttpRequest();
+        xh.open("POST", "/Users/Story/AjaxSaveHandler", true);
+        xh.onload = function () {
+            //DoAjaxLoad();
+        }
+        var formdata = new FormData();
+        formdata.append("htmlcode", code);
+        xh.send(formdata);
+    }
+
+    function DoAjaxLoad() {
+
+        div_savedhtml.innerText = "Loading...";
+
+        var xh = new XMLHttpRequest();
+        xh.open("POST", "/Users/Story/AjaxLoadHandler", true);
+        xh.onload = function () {
+            var code = xh.responseText;
+            div_savedhtml.innerHTML = code;
+        }
+        var formdata = new FormData();
+        formdata.append("id", 123);
+        xh.send(formdata);
+    }
+
+    function SaveStory() {
+        var code = editor1.getHTMLCode();
+        $.ajax(
+            {
+                type: "POST", //HTTP POST Method
+                url: "/Users/Story/AjaxSaveStory", // Controller/View
+                data: { //Passing data
+                    Title: $("#Title").val(), //Reading text box values using Jquery
+                    htmlStory: code,
+                    StoryId: $("#StoryId").val(),
+                    FileName: $("#FileName").val(),
+                },
+                success: function (response) {
+                    if (response.success) {
+                        var result = response.data;
+                        $("#StoryId").val(result.storyId);
+                        $("#FileName").val(result.fileName);
+                        toastr.success(response.responseText);
+                    } else {
+                        toastr.success(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("error!");  //
+                }
+
+            });
+    }
+
+    $(document).ready(function () {
+        var StoryId = GetURLParameter();
+        if (StoryId > 0)
+            getStory(StoryId);
+    });
+
+    function GetURLParameter() {
+        var sPageURL = window.location.href;
+        var indexOfLastSlash = sPageURL.lastIndexOf("/");
+
+        if (indexOfLastSlash > 0 && sPageURL.length - 1 != indexOfLastSlash)
+            return sPageURL.substring(indexOfLastSlash + 1);
+        else
+            return 0;
+    }
+    function getStory(StoryId) {
+        $.ajax(
+            {
+                type: "GET", 
+                url: "/Users/Story/LoadUserStory?StoryId=" + StoryId, // Controller/View
+                success: function (response) {
+                    if (response.success) {
+                        var result = response.data;
+                        $("#StoryId").val(result.storyId);
+                        $("#FileName").val(result.fileName);
+                        $("#Title").val(result.title);
+                        editor1.setHTMLCode(result.htmlStory);
+                      
+                    } else {
+                        toastr.success(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("error!");  //
+                }
+
+            });
+    }
+
+    function PublishStory() {
+
+        $.ajax(
+            {
+                type: "POST", //HTTP POST Method
+                url: "/Users/Story/AjaxPublishStory", // Controller/View
+                data: { StoryId: $("#StoryId").val() },
+                success: function (response) {
+                    if (response.success) {
+                        var result = response.data;
+                        toastr.success(response.responseText);
+                    } else {
+                        //toastr.success(response.responseText);
+                    }
+                },
+                error: function (response) {
+                    alert("error!");  //
+                }
+
+            });
+    }
+</script>
+<style>
+
+    .rightButton {
+        position: relative;
+        z-index: 99;
+        float: right;
+    }
+</style>
+
+
+
